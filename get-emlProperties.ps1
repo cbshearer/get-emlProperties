@@ -46,8 +46,7 @@ function Convert-EmlFile
     return $cdoMessageObject
 }
 
-
-$emlfiles = get-childitem "C:\temp\cbshearer\*.eml"
+$emlFiles = get-childitem "C:\temp\cbshearer\*.eml"
 $extractedAddresses = "c:\temp\cbshearer\emails.csv"
 
 foreach ($file in $emlfiles)
@@ -58,7 +57,7 @@ foreach ($file in $emlfiles)
             $emailData = $null
             
         Write-Host "`n################"
-        Write-Host $file.Name
+        Write-Host "File     :" $file.Name
 
         $emailData = convert-EmlFile -emlfilename $file
 
@@ -70,17 +69,17 @@ foreach ($file in $emlfiles)
                 $addresses += $emailData.ReplyTo
                 $addresses += $emailData.Sender
 
-        Write-Host "Subject:" $emailData.Subject
+        Write-Host "Subject  :" $emailData.Subject
 
         ## Extract email addresses
             $pattern = "([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})"
             $results = ($addresses | Select-String $pattern -AllMatches).Matches  
 
-        ## export each address to a line of a CSV file.    
+        ## export each address to a line of a CSV file.   
+        Write-Host "Addresses: " 
         foreach ($item in ($results)) 
             { 
                 write-host "  -" $item.value 
                 $item | select-object value | export-csv $extractedAddresses -NoTypeInformation -NoClobber -Append
             }
-
     }
